@@ -185,7 +185,7 @@ def save_image(epoch):
             axes[i,j].axis('off')
             axes[i,j].set_title("Digit: %d" % labels[count])
             count+=1
-    plt.savefig('images/cgan_%d.jpg' % epoch)
+    plt.savefig('cgan_%d.jpg' % epoch)
     plt.close()
 
 
