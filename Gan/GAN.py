@@ -83,6 +83,8 @@ def make_discriminator_model():
 
     return model
 
+generator = make_generator_model()
+discriminator = make_discriminator_model()
 
 print(" def model\n\n")
 
