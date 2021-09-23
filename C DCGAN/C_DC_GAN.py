@@ -165,10 +165,10 @@ def train_step(images):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
 
       #images[1].numpy() = label of the images
-      generated_images = generator((noise,images[1].numpy()), training=True)
+      generated_images = generator((noise,images[1]), training=True)
 
-      real_output = discriminator((images[0],images[1].numpy()), training=True)
-      fake_output = discriminator((generated_images,images[1].numpy()), training=True)
+      real_output = discriminator((images[0],images[1]), training=True)
+      fake_output = discriminator((generated_images,images[1]), training=True)
 
       gen_loss = generator_loss(fake_output)
       disc_loss = discriminator_loss(real_output, fake_output)
@@ -179,7 +179,9 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
     
+    return (gen_loss,disc_loss)
 
+    
 # to visualize progress in the animated GIF)
 seed = tf.random.normal([num_examples_to_generate, noise_dim])    
     
