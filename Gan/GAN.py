@@ -88,7 +88,7 @@ def make_generator_model():
 
     return model
 
-
+print("zz")
 #D model
 def make_discriminator_model():
     model = tf.keras.Sequential()
@@ -107,7 +107,7 @@ def make_discriminator_model():
     return model
 
 generator = make_generator_model()
-generator.summary
+print(generator.summary)
 discriminator = make_discriminator_model()
 
 
@@ -142,7 +142,7 @@ print(" def train")
 
 
 @tf.function
-def train_step(images):
+def  train_step(images):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
@@ -160,23 +160,26 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
     
+    return (gen_loss,disc_loss)
 
 # to visualize progress in the animated GIF)
 seed = tf.random.normal([num_examples_to_generate, noise_dim])    
     
 def train(dataset, epochs):
+    gen_loss,disc_loss =0,0
     for epoch in range(epochs):
         start = time.time()
-
+        
         for image_batch in dataset:
-            train_step(image_batch)
+            (gen_loss,disc_loss) = train_step(image_batch)
 
         # Produce images for the GIF
         display.clear_output(wait=True)
         generate_and_save_images(generator,epoch + 1,seed)
 
    
-        print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+        print ('Epoch {} LossG = {}   LossD={}  Time for epoch {} sec'
+              .format(epoch + 1,gen_loss,disc_loss, time.time()-start))
 
     # Generate after the final epoch
     display.clear_output(wait=True)
