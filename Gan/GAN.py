@@ -1,6 +1,11 @@
 print("---start---")
+print("DCGAN")
 
+
+#------------------------------------------------------------------------#
 print(" import")
+
+
 import tensorflow as tf
 
 import glob
@@ -14,10 +19,10 @@ import time
 
 from IPython import display
 
+
+
 print(" import\n\n")
-
-
-
+#------------------------------------------------------------------------#
 print(" param")
 
 
@@ -27,22 +32,41 @@ noise_dim = 100
 num_examples_to_generate = 16
 
 print(" param\n\n")
-
-
-
+#------------------------------------------------------------------------#
 print(" dataset")
+
+
+
+#import
 (x_train,y_train),(_,_)=tf.keras.datasets.mnist.load_data()
 
+#reshape and norm
 x_train = x_train.reshape(x_train.shape[0], 28, 28, 1).astype('float32')
 x_train= ( x_train - 127.5 ) / 127.5
 
+#suffle
 train_dataset = tf.data.Dataset.from_tensor_slices(x_train).shuffle(x_train.shape[0]).batch(BATCH_SIZE)
+
+
+
 print(" dataset\n\n")
-
-
-
-
+#------------------------------------------------------------------------#
 print(" def model")
+
+
+import tensorflow as tf
+
+import glob
+import imageio
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import PIL
+from tensorflow.keras import layers
+import time
+
+from IPython import display
+#G model
 def make_generator_model():
     model = tf.keras.Sequential()
     model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(100,)))
@@ -50,23 +74,22 @@ def make_generator_model():
     model.add(layers.LeakyReLU())
 
     model.add(layers.Reshape((7, 7, 256)))
-    assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
+    #assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 7, 7, 128)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 14, 14, 64)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 28, 28, 1)
 
     return model
 
+
+#D model
 def make_discriminator_model():
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
@@ -84,15 +107,17 @@ def make_discriminator_model():
     return model
 
 generator = make_generator_model()
+generator.summary
 discriminator = make_discriminator_model()
 
+
+
 print(" def model\n\n")
-
-
-
-
+#------------------------------------------------------------------------#
 print(" def loss")
-# This method returns a helper function to compute cross entropy loss
+
+
+
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 def discriminator_loss(real_output, fake_output):
@@ -101,31 +126,21 @@ def discriminator_loss(real_output, fake_output):
     total_loss = real_loss + fake_loss
     return total_loss
 
-
-def discriminator_loss(real_output, fake_output):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
-    total_loss = real_loss + fake_loss
-    return total_loss
-
-
 def generator_loss(fake_output):
     return cross_entropy(tf.ones_like(fake_output), fake_output)
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+
+
+
 print(" def loss\n\n")
-
-
-
-# You will reuse this seed overtime (so it's easier)
-# to visualize progress in the animated GIF)
-seed = tf.random.normal([num_examples_to_generate, noise_dim])
-
+#------------------------------------------------------------------------#
 print(" def train")
 
-# Notice the use of `tf.function`
-# This annotation causes the function to be "compiled".
+
+
+
 @tf.function
 def train_step(images):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
@@ -145,6 +160,9 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
     
+
+# to visualize progress in the animated GIF)
+seed = tf.random.normal([num_examples_to_generate, noise_dim])    
     
 def train(dataset, epochs):
     for epoch in range(epochs):
@@ -153,11 +171,9 @@ def train(dataset, epochs):
         for image_batch in dataset:
             train_step(image_batch)
 
-        # Produce images for the GIF as you go
+        # Produce images for the GIF
         display.clear_output(wait=True)
-        generate_and_save_images(generator,
-                                 epoch + 1,
-                                 seed)
+        generate_and_save_images(generator,epoch + 1,seed)
 
    
         print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
@@ -170,8 +186,7 @@ def train(dataset, epochs):
   
   
 def generate_and_save_images(model, epoch, test_input):
-  # Notice `training` is set to False.
-  # This is so all layers run in inference mode (batchnorm).
+
   predictions = model(test_input, training=False)
 
   fig = plt.figure(figsize=(4, 4))
@@ -183,14 +198,24 @@ def generate_and_save_images(model, epoch, test_input):
 
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
   plt.show()
+
+
+
+
 print(" def train\n\n")
-
+#------------------------------------------------------------------------#
 print("train\n")
+
+
 train(train_dataset, EPOCHS)
+
+
 print("train\n\n")
-
-
+#------------------------------------------------------------------------#
 print("display")
+
+
+
 # Display a single image using the epoch number
 def display_image(epoch_no):
   return PIL.Image.open('image_at_epoch_{:04d}.png'.format(epoch_no))
@@ -208,11 +233,8 @@ with imageio.get_writer(anim_file, mode='I') as writer:
     writer.append_data(image)
   image = imageio.imread(filename)
   writer.append_data(image)
-  
-  
-import tensorflow_docs.vis.embed as embed
-embed.embed_file(anim_file)
+
 
 print("display\n\n")
-
+#------------------------------------------------------------------------#
 print("---END---")
