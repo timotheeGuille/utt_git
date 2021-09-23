@@ -88,7 +88,7 @@ def make_generator_model():
 
     return model
 
-print("zz")
+
 #D model
 def make_discriminator_model():
     model = tf.keras.Sequential()
@@ -107,9 +107,9 @@ def make_discriminator_model():
     return model
 
 generator = make_generator_model()
-print(generator.summary)
+print(generator.summary())
 discriminator = make_discriminator_model()
-
+print(discriminator.summary())
 
 
 print(" def model\n\n")
