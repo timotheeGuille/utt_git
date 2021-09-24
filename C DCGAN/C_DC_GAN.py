@@ -160,27 +160,18 @@ print(" def train")
 
 #@tf.function
 def train_step(images):
-    print("--->train_step")
     noise = tf.random.normal([images[-1].numpy().size, noise_dim])
-    print("   train_step 1")
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-      print("   train_step 2")
       #images[1].numpy() = label of the images
       generated_images = generator((noise,images[1]), training=True)
-      print("   train_step 3")
       real_output = discriminator((images[0],images[1]), training=True)
       fake_output = discriminator((generated_images,images[1]), training=True)
-      print("   train_step 4")
       gen_loss = generator_loss(fake_output)
       disc_loss = discriminator_loss(real_output, fake_output)
-    print("   train_step 5")
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
-    print("   train_step 6")
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-    print("   train_step 7")
-    print("<---train_step")
     return (gen_loss,disc_loss)
 
     
@@ -188,44 +179,32 @@ def train_step(images):
 seed = tf.random.normal([num_examples_to_generate, noise_dim])    
     
 def train(dataset, epochs):
-    print("--->train")
     gen_loss,disc_loss =0,0
     for epoch in range(epochs):
         start = time.time()
-        print("   train1")
         for image_batch in dataset:
-            print("   train2")
             (gen_loss,disc_loss) = train_step(image_batch)
-        print("   train3")
         # Produce images for the GIF
         display.clear_output(wait=True)
-        print("   train4")
         generate_and_save_images(generator,epoch + 1,seed)
 
-        print("   train5")
         print ('Epoch {} LossG = {}   LossD={}  Time for epoch {} sec'
               .format(epoch + 1,gen_loss,disc_loss, time.time()-start))
 
     # Generate after the final epoch
     display.clear_output(wait=True)
-    print("   train6")
     generate_and_save_images(generator,epochs,seed)
   
   
 def generate_and_save_images(model, epoch, test_input):
-  print("--->generate_and_save_images")
   predictions = model(([test_input],np.array([0,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6])), training=False)
-  print("   generate_and_save_images2")
   fig = plt.figure(figsize=(4, 4))
-  print("   generate_and_save_images3")
   for i in range(predictions.shape[0]):
       plt.subplot(4, 4, i+1)
       plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
       plt.axis('off')
-  print("   generate_and_save_images4")
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
   plt.show()
-  print("<---generate_and_save_images")
 
 
 
