@@ -161,7 +161,7 @@ print(" def train")
 #@tf.function
 def train_step(images):
     print("--->train_step")
-    noise = tf.random.normal([BATCH_SIZE, noise_dim])
+    noise = tf.random.normal([images[-1].numpy().size, noise_dim])
     print("   train_step 1")
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
       print("   train_step 2")
