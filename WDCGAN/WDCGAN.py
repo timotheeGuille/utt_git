@@ -121,13 +121,10 @@ print(" def loss")
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 def discriminator_loss(real_output, fake_output):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
-    total_loss = real_loss + fake_loss
-    return total_loss
+    return tf.reduce_mean(real_output)-tf.reduce_mean(fake_output)
 
 def generator_loss(fake_output):
-    return cross_entropy(tf.ones_like(fake_output), fake_output)
+    return (-1)*tf.reduce_mean(fake_output)
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
@@ -178,8 +175,8 @@ def train(dataset, epochs):
         generate_and_save_images(generator,epoch + 1,seed)
 
    
-        print ('Epoch {} LossG = {}   LossD={}  Time for epoch {} sec'
-              .format(epoch + 1,gen_loss,disc_loss, time.time()-start))
+        print ('Epoch {} LossG = {}   LossD={}  LossD+G {} Time for epoch {} sec'
+              .format(epoch + 1,gen_loss,disc_loss,gen_loss+disc_loss, time.time()-start))
 
     # Generate after the final epoch
     display.clear_output(wait=True)
