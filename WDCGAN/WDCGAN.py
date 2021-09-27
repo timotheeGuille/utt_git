@@ -126,8 +126,8 @@ def discriminator_loss(real_output, fake_output):
 def generator_loss(fake_output):
     return (-1)*tf.reduce_mean(fake_output)
 
-generator_optimizer = tf.keras.optimizers.RMSprop(1e-4)
-discriminator_optimizer = tf.keras.optimizers.RMSprop(1e-4)
+generator_optimizer = tf.keras.optimizers.RMSprop(learning_rate=0.001)
+discriminator_optimizer = tf.keras.optimizers.RMSprop(learning_rate=0.001)
 
 
 
