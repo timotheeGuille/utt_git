@@ -118,10 +118,24 @@ print(" def loss")
 
 
 
-cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+def gradient_penalty(real_output, fake_output):
 
-def discriminator_loss(real_output, fake_output):
-    return tf.reduce_mean(real_output)-tf.reduce_mean(fake_output)
+    #todo : change with :noise = tf.random.normal([BATCH_SIZE, noise_dim])
+    epsilon = tf.random.uniform([real_output.shape[0], 1, 1, 1],0.0,1.0)
+    x_interpolate= epsilon*real_output + (1-epsilon) * (fake_output)
+
+    #comute gradient of critic
+    with tf.GradientTape() as t:
+        t.watch(x_interpolate)
+        disc_interpolate=discriminator(x_interpolate)
+    gradient = t.gradient(disc_interpolate,x_interpolate)
+    norme=tf.sqrt(tf.reduce_sum( gradient ** 2 , axis=[1,2] ) )
+    gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
+    return gp
+
+def discriminator_loss(real_output, fake_output,gp):
+    coeff = 10.0
+    return tf.reduce_mean(real_output)-tf.reduce_mean(fake_output) + coeff * gp
 
 def generator_loss(fake_output):
     return (-1)*tf.reduce_mean(fake_output)
@@ -148,8 +162,10 @@ def  train_step(images):
       real_output = discriminator(images, training=True)
       fake_output = discriminator(generated_images, training=True)
 
+      gp=gradient_penalty(images, generated_images)
+
       gen_loss = generator_loss(fake_output)
-      disc_loss = discriminator_loss(real_output, fake_output)
+      disc_loss = discriminator_loss(real_output, fake_output,gp)
 
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
