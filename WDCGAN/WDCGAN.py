@@ -1,6 +1,8 @@
 print("---start---")
 print("WDCGAN")
 
+#typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
+typeExec =1
 
 #------------------------------------------------------------------------#
 print(" import")
@@ -26,8 +28,9 @@ print(" import\n\n")
 print(" param")
 
 
-BATCH_SIZE = 256
-EPOCHS = 5
+
+BATCH_SIZE = 256 if typeExec == 0 else 16
+EPOCHS = 50 if typeExec == 0 else 5
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -39,6 +42,10 @@ print(" dataset")
 
 #import
 (x_train,y_train),(_,_)=tf.keras.datasets.mnist.load_data()
+
+if typeExec == 1:
+  x_train=x_train[0:256,:,:]
+  y_train=y_train[0:256]
 
 
 #cut size to avoid size bigger than batchsize
@@ -60,18 +67,6 @@ train_dataset = tf.data.Dataset.from_tensor_slices(x_train).shuffle(x_train.shap
 print(" dataset\n\n")
 #------------------------------------------------------------------------#
 print(" def model")
-
-
-import tensorflow as tf
-
-import glob
-import imageio
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import PIL
-from tensorflow.keras import layers
-import time
 
 from IPython import display
 #G model
@@ -148,9 +143,8 @@ def discriminator_loss(real_output, fake_output,gp):
 def generator_loss(fake_output):
     return (-1)*tf.reduce_mean(fake_output)
 
-generator_optimizer = tf.keras.optimizers.RMSprop(learning_rate=0.001)
-discriminator_optimizer = tf.keras.optimizers.RMSprop(learning_rate=0.001)
-
+generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 
 print(" def loss\n\n")
@@ -195,7 +189,7 @@ def train(dataset, epochs):
             (gen_loss,disc_loss) = train_step(image_batch)
 
         # Produce images for the GIF
-        display.clear_output(wait=True)
+        #display.clear_output(wait=True)
         generate_and_save_images(generator,epoch + 1,seed)
 
    
