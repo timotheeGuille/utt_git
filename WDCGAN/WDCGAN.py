@@ -2,7 +2,7 @@ print("---start---")
 print("WDCGAN")
 
 #typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
-typeExec =1
+typeExec =0
 
 #------------------------------------------------------------------------#
 print(" import")
