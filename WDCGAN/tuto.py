@@ -24,12 +24,10 @@ N_TRAIN_BATCHES =int(TRAIN_BUF/BATCH_SIZE)
 N_TEST_BATCHES = int(TEST_BUF/BATCH_SIZE)
 
 # load dataset
-(train_images, _), (test_images, _) = tf.keras.datasets.fashion_mnist.load_data()
+(train_images, _), (test_images, _) = tf.keras.datasets.mnist.load_data()
 
 # split dataset
-train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype(
-    "float32"
-) / 255.0
+train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype("float32") / 255.0
 test_images = test_images.reshape(test_images.shape[0], 28, 28, 1).astype("float32") / 255.0
 
 # batch datasets
@@ -43,6 +41,8 @@ test_dataset = (
     .shuffle(TEST_BUF)
     .batch(BATCH_SIZE)
 )
+
+
 
 """### Define the network as tf.keras.model object"""
 
