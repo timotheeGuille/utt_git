@@ -40,6 +40,14 @@ print(" dataset")
 #import
 (x_train,y_train),(_,_)=tf.keras.datasets.mnist.load_data()
 
+
+#cut size to avoid size bigger than batchsize
+size_cut=x_train.shape[0]-x_train.shape[0]%BATCH_SIZE
+
+x_train=x_train[0:size_cut,:,:]
+y_train=y_train[0:size_cut]
+
+
 #reshape and norm
 x_train = x_train.reshape(x_train.shape[0], 28, 28, 1).astype('float32')
 x_train= ( x_train - 127.5 ) / 127.5
