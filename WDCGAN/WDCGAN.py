@@ -121,11 +121,11 @@ print(" def loss")
 
 
 
-def gradient_penalty(real_output, fake_output):
+def gradient_penalty(images, generated_images):
 
     #todo : change with :noise = tf.random.normal([BATCH_SIZE, noise_dim])
-    epsilon = tf.random.uniform([real_output.shape[0], 1, 1, 1],0.0,1.0)
-    x_interpolate= epsilon*real_output + (1-epsilon) * (fake_output)
+    epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
+    x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
 
     #comute gradient of critic
     with tf.GradientTape() as t:
@@ -136,12 +136,24 @@ def gradient_penalty(real_output, fake_output):
     gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
     return gp
 
-def discriminator_loss(real_output, fake_output,gp):
+def discriminator_loss2(real_output, fake_output,gp):
     coeff = 10.0
     return tf.reduce_mean(real_output)-tf.reduce_mean(fake_output) + coeff * gp
 
-def generator_loss(fake_output):
+def generator_loss2(fake_output):
     return (-1)*tf.reduce_mean(fake_output)
+
+
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+def discriminator_loss(real_output, fake_output,gp):
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+def generator_loss(fake_output):
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
+
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
