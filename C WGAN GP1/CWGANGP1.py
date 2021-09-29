@@ -4,6 +4,8 @@ print("C-DCGAN")
 #------------------------------------------------------------------------#
 print(" import")
 
+#typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
+typeExec =0
 
 import tensorflow as tf
 
@@ -24,8 +26,8 @@ print(" import\n\n")
 #------------------------------------------------------------------------#
 print(" param")
 
-BATCH_SIZE = 256
-EPOCHS = 50
+BATCH_SIZE = 256 if typeExec == 0 else 16
+EPOCHS = 50 if typeExec == 0 else 5
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -36,6 +38,17 @@ print(" dataset")
 
 #import
 (x_train,y_train),(_,_)=tf.keras.datasets.mnist.load_data()
+
+if typeExec == 1:
+  x_train=x_train[0:256,:,:]
+  y_train=y_train[0:256]
+
+
+#cut size to avoid size bigger than batchsize
+size_cut=x_train.shape[0]-x_train.shape[0]%BATCH_SIZE
+
+x_train=x_train[0:size_cut,:,:]
+y_train=y_train[0:size_cut]
 
 #reshape and norm
 x_train = x_train.reshape(x_train.shape[0], 28, 28, 1).astype('float32')
@@ -132,13 +145,13 @@ print(" def loss")
 
 def gradient_penalty(images, generated_images):
 
-    epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
-    x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
+    epsilon = tf.random.uniform([images[0].shape[0], 1, 1, 1],0.0,1.0)
+    x_interpolate= epsilon*images[0] + (1-epsilon) * (generated_images)
 
     #comute gradient of critic
     with tf.GradientTape() as t:
         t.watch(x_interpolate)
-        disc_interpolate=discriminator(x_interpolate)
+        disc_interpolate=discriminator((x_interpolate,images[1]))
     gradient = t.gradient(disc_interpolate,x_interpolate)
     norme=tf.sqrt(tf.reduce_sum( gradient ** 2 , axis=[1,2] ) )
     gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
@@ -175,7 +188,7 @@ def train_step(images):
       real_output = discriminator((images[0],images[1]), training=True)
       fake_output = discriminator((generated_images,images[1]), training=True)
 
-      gp=gradient_penalty(images[0], generated_images)
+      gp=gradient_penalty(images, generated_images)
 
       gen_loss = generator_loss(fake_output)
       disc_loss = discriminator_loss(real_output, fake_output,gp)
@@ -197,7 +210,7 @@ def train(dataset, epochs):
         for image_batch in dataset:
             (gen_loss,disc_loss) = train_step(image_batch)
         # Produce images for the GIF
-        display.clear_output(wait=True)
+        #display.clear_output(wait=True)
         generate_and_save_images(generator,epoch + 1,seed)
 
         print ('Epoch {} LossG = {}   LossD={}  Time for epoch {} sec'
@@ -216,7 +229,7 @@ def generate_and_save_images(model, epoch, test_input):
       plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
       plt.axis('off')
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
-  plt.show()
+  #plt.show()
 
 
 
@@ -236,7 +249,7 @@ print("display")
 def display_image(epoch_no):
   return PIL.Image.open('image_at_epoch_{:04d}.png'.format(epoch_no))
 
-display_image(EPOCHS)
+#display_image(EPOCHS)
 
 
 anim_file = 'dcgan.gif'
