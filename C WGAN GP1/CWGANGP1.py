@@ -175,7 +175,7 @@ def train_step(images):
       real_output = discriminator((images[0],images[1]), training=True)
       fake_output = discriminator((generated_images,images[1]), training=True)
 
-      gp=gradient_penalty(images, generated_images)
+      gp=gradient_penalty(images[0], generated_images)
 
       gen_loss = generator_loss(fake_output)
       disc_loss = discriminator_loss(real_output, fake_output,gp)
