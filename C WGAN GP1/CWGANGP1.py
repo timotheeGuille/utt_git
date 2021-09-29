@@ -1,10 +1,6 @@
 print("---start---")
 print("C-DCGAN")
 
-import logging
-logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
-
-
 #------------------------------------------------------------------------#
 print(" import")
 
@@ -27,17 +23,15 @@ from IPython import display
 print(" import\n\n")
 #------------------------------------------------------------------------#
 print(" param")
-logging.info('---param')
 
 BATCH_SIZE = 256
-EPOCHS = 5
+EPOCHS = 50
 noise_dim = 100
 num_examples_to_generate = 16
 
 print(" param\n\n")
 #------------------------------------------------------------------------#
 print(" dataset")
-logging.info('---dataset')
 
 
 #import
@@ -55,7 +49,6 @@ train_dataset = tf.data.Dataset.from_tensor_slices((x_train,y_train)).shuffle(x_
 print(" dataset\n\n")
 #------------------------------------------------------------------------#
 print(" def model")
-logging.info('---def model')
 
 #G model
 def make_generator_model(nb_classes=10,z_dim=100):
@@ -135,7 +128,6 @@ print(discriminator.summary())
 print(" def model\n\n")
 #------------------------------------------------------------------------#
 print(" def loss")
-logging.debinfoug('---def loss')
 
 
 def gradient_penalty(images, generated_images):
@@ -169,13 +161,11 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 print(" def loss\n\n")
 #------------------------------------------------------------------------#
 print(" def train")
-logging.info('---def train')
 
 
 
 #@tf.function
 def train_step(images):
-    logging.debug('--->train_step')
     noise = tf.random.normal([images[-1].numpy().size, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
@@ -194,7 +184,6 @@ def train_step(images):
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-    logging.debug('<---train_step')
     return (gen_loss,disc_loss)
 
     
@@ -202,7 +191,6 @@ def train_step(images):
 seed = tf.random.normal([num_examples_to_generate, noise_dim])    
     
 def train(dataset, epochs):
-    logging.debug('--->train')
     gen_loss,disc_loss =0,0
     for epoch in range(epochs):
         start = time.time()
@@ -218,7 +206,6 @@ def train(dataset, epochs):
     # Generate after the final epoch
     display.clear_output(wait=True)
     generate_and_save_images(generator,epochs,seed)
-    logging.debug('<---train')
   
   
 def generate_and_save_images(model, epoch, test_input):
@@ -236,7 +223,6 @@ def generate_and_save_images(model, epoch, test_input):
 print(" def train\n\n")
 #------------------------------------------------------------------------#
 print("train\n")
-logging.info('---train')
 
 train(train_dataset, EPOCHS)
 
@@ -244,7 +230,6 @@ train(train_dataset, EPOCHS)
 print("train\n\n")
 #------------------------------------------------------------------------#
 print("display")
-logging.info('---display')
 
 
 # Display a single image using the epoch number
