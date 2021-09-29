@@ -157,14 +157,18 @@ def gradient_penalty(images, generated_images):
     gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
     return gp
 
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
 def discriminator_loss(real_output, fake_output,gp):
     coeff = 10.0
-    loss= (tf.reduce_mean(real_output)-tf.reduce_mean(fake_output) + coeff * gp)
-    return loss
+
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    total_loss = real_loss + fake_loss - coeff * gp
+    return total_loss
 
 def generator_loss(fake_output):
-    loss=  tf.reduce_mean(fake_output)
-    return loss
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
