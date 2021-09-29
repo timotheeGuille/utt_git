@@ -123,7 +123,6 @@ print(" def loss")
 
 def gradient_penalty(images, generated_images):
 
-    #todo : change with :noise = tf.random.normal([BATCH_SIZE, noise_dim])
     epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
     x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
 
@@ -146,24 +145,9 @@ def generator_loss(fake_output):
     return loss
 
 
-cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-
-def discriminator_loss2(real_output, fake_output,gp):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
-    total_loss = real_loss + fake_loss
-    return total_loss
-
-def generator_loss2(fake_output):
-    return cross_entropy(tf.ones_like(fake_output), fake_output)
-
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
-
-generator_optimizer = tf.keras.optimizers.Adam(0.0001, beta_1=0.5)
-discriminator_optimizer = tf.keras.optimizers.RMSprop(0.0005)# train the model
 
 print(" def loss\n\n")
 #------------------------------------------------------------------------#
