@@ -1,6 +1,8 @@
 print("---start---")
-print("DCGAN")
+print("GAN")
 
+#typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
+typeExec =0
 
 #------------------------------------------------------------------------#
 print(" import")
@@ -26,8 +28,9 @@ print(" import\n\n")
 print(" param")
 
 
-BATCH_SIZE = 256
-EPOCHS = 5
+
+BATCH_SIZE = 256 if typeExec == 0 else 16
+EPOCHS = 50 if typeExec == 0 else 5
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -39,6 +42,17 @@ print(" dataset")
 
 #import
 (x_train,y_train),(_,_)=tf.keras.datasets.mnist.load_data()
+
+if typeExec == 1:
+  x_train=x_train[0:256,:,:]
+  y_train=y_train[0:256]
+
+
+#cut size to avoid size bigger than batchsize
+size_cut=x_train.shape[0]-x_train.shape[0]%BATCH_SIZE
+
+x_train=x_train[0:size_cut,:,:]
+y_train=y_train[0:size_cut]
 
 #reshape and norm
 x_train = x_train.reshape(x_train.shape[0], 28, 28, 1).astype('float32')
