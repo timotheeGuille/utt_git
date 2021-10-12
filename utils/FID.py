@@ -16,12 +16,10 @@ def compute_embedding(dataloader, count):
 	image_embeddings=[]
 
 	for _ in tqdm(range(count)):
-		print("av")
 		images=next(iter(dataloader))
 		embeddings = inception_model.predict(images)
 
 		image_embeddings.extend(embeddings)
-		print("ap")
 	return np.array(image_embeddings)
 
 
