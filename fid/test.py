@@ -1,11 +1,11 @@
-from utils import FID
-
-
 print("---start---")
 print("GAN")
 
 #typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
 typeExec =1
+
+
+
 
 #------------------------------------------------------------------------#
 print(" import")
@@ -21,8 +21,21 @@ import os
 import PIL
 from tensorflow.keras import layers
 import time
+import sys
 
 from IPython import display
+
+
+
+if typeExec==1:
+  print(os.getcwd())
+  sys.path.append((os.getcwd()))
+  from utils import FID
+else:
+  sys.path.append(os.path.dirname(os.getcwd()))
+  from utils import FID
+
+
 
 AUTO = tf.data.experimental.AUTOTUNE
 
