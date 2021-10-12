@@ -93,7 +93,7 @@ import numpy as np
 import os
 import PIL
 from tensorflow.keras import layers
-import time
+import datetime
 
 from IPython import display
 #G model
@@ -163,10 +163,30 @@ generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 
-
 print(" def loss\n\n")
 #------------------------------------------------------------------------#
+print(" def metrics")
+
+discriminator_loss_M = tf.keras.metrics.Mean('d_loss', dtype=tf.float32)
+discriminator_accuracy_M = tf.keras.metrics.BinaryCrossentropy(name='d_accuracy')
+generator_loss_M = tf.keras.metrics.Mean('g_loss', dtype=tf.float32)
+generator_accuracy_M = tf.keras.metrics.BinaryCrossentropy('g_accuracy')
+
+
+current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+gen_log_dir = './logs/gradient_tape/' + current_time + '/gen'
+disc_log_dir = './logs/gradient_tape/' + current_time + '/disc'
+gen_summary_writer = tf.summary.create_file_writer(gen_log_dir)
+disc_summary_writer = tf.summary.create_file_writer(disc_log_dir)
+
+img_log_dir = './logs/gradient_tape/' + current_time + '/img'
+img_summary_writer = tf.summary.create_file_writer(img_log_dir)
+
+print(" def metrics\n\n")
+#------------------------------------------------------------------------#
 print(" def train")
+
+
 
 
 
@@ -189,6 +209,10 @@ def  train_step(images):
 
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+
+    discriminator_loss_M(disc_loss)
+    discriminator_accuracy_M(real_output,tf.ones_like(real_output))
+    generator_loss_M(gen_loss)
     
     return (gen_loss,disc_loss)
 
@@ -208,8 +232,21 @@ def train(dataset, epochs):
         generate_and_save_images(generator,epoch + 1,seed)
 
    
-        print ('Epoch {} LossG = {}   LossD={}  Time for epoch {} sec'
-              .format(epoch + 1,gen_loss,disc_loss, time.time()-start))
+        with gen_summary_writer.as_default():
+            tf.summary.scalar('loss', generator_loss_M.result(), step=epoch)
+
+
+        with disc_summary_writer.as_default():
+            tf.summary.scalar('loss', discriminator_loss_M.result(), step=epoch)
+            tf.summary.scalar('accuracy', discriminator_accuracy_M.result(), step=epoch)
+
+        print ('Epoch {} LossG = {} == {}  LossD={} == {} Time for epoch {} sec'
+              .format(epoch + 1,gen_loss,generator_loss_M.result(),disc_loss,discriminator_loss_M.result(), time.time()-start))
+
+        # Reset metrics every epoch
+        discriminator_loss_M.reset_states()
+        generator_loss_M.reset_states()
+        discriminator_accuracy_M.reset_states()
 
 
         #compute and show fid
@@ -236,6 +273,9 @@ def generate_and_save_images(model, epoch, test_input):
       plt.axis('off')
 
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
+
+  with img_summary_writer.as_default():
+      tf.summary.image('img_generate', predictions, step=epoch-1)
   #plt.show()
 
 
