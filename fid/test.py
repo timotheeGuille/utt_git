@@ -173,6 +173,7 @@ generator_loss_M = tf.keras.metrics.Mean('g_loss', dtype=tf.float32)
 generator_accuracy_M = tf.keras.metrics.BinaryCrossentropy('g_accuracy')
 
 
+
 current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 gen_log_dir = './logs/gradient_tape/' + current_time + '/gen'
 disc_log_dir = './logs/gradient_tape/' + current_time + '/disc'
@@ -181,6 +182,11 @@ disc_summary_writer = tf.summary.create_file_writer(disc_log_dir)
 
 img_log_dir = './logs/gradient_tape/' + current_time + '/img'
 img_summary_writer = tf.summary.create_file_writer(img_log_dir)
+
+
+fid_M=tf.keras.metrics.Mean('fid', dtype=tf.float32)
+fid_log_dir = './logs/gradient_tape/' + current_time + '/dif'
+fid_summary_writer = tf.summary.create_file_writer(fid_log_dir)
 
 print(" def metrics\n\n")
 #------------------------------------------------------------------------#
@@ -231,28 +237,36 @@ def train(dataset, epochs):
         #display.clear_output(wait=True)
         generate_and_save_images(generator,epoch + 1,seed)
 
-   
+        #compute and show fid
+        generateDataset= genDataset()
+        fid=FID.fid(dataset,generateDataset,BATCH_SIZE)
+        fid_M(fid)
+
+        with fid_summary_writer.as_default():
+            tf.summary.scalar('fid', fid_M.result(), step=epoch)
+
         with gen_summary_writer.as_default():
             tf.summary.scalar('loss', generator_loss_M.result(), step=epoch)
 
+
+        
 
         with disc_summary_writer.as_default():
             tf.summary.scalar('loss', discriminator_loss_M.result(), step=epoch)
             tf.summary.scalar('accuracy', discriminator_accuracy_M.result(), step=epoch)
 
-        print ('Epoch {} LossG = {} == {}  LossD={} == {} Time for epoch {} sec'
-              .format(epoch + 1,gen_loss,generator_loss_M.result(),disc_loss,discriminator_loss_M.result(), time.time()-start))
+
+        print ('Epoch {} LossG = {} == {}  LossD={} == {} FID={}  Time for epoch {} sec'
+              .format(epoch + 1,gen_loss,generator_loss_M.result(),disc_loss,discriminator_loss_M.result(),fid, time.time()-start))
 
         # Reset metrics every epoch
         discriminator_loss_M.reset_states()
         generator_loss_M.reset_states()
         discriminator_accuracy_M.reset_states()
+        fid_M.reset_states()
 
 
-        #compute and show fid
-        generateDataset= genDataset()
-        fid=FID.fid(dataset,generateDataset,BATCH_SIZE)
-        print('FID = {}'.format(fid))
+        
 
     # Generate after the final epoch
     #display.clear_output(wait=True)
