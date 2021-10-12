@@ -16,11 +16,12 @@ def compute_embedding(dataloader, count):
 	image_embeddings=[]
 
 	for _ in tqdm(range(count)):
+		print("av")
 		images=next(iter(dataloader))
 		embeddings = inception_model.predict(images)
 
 		image_embeddings.extend(embeddings)
-
+		print("ap")
 	return np.array(image_embeddings)
 
 
@@ -38,7 +39,7 @@ def calculate_Fid(real_embeddings, generated_embeddings):
 	covmean =linalg.sqrtm(sigma1.dot(sigma2))
 
 	if np.iscomplexobj(covmean):
-		covmean = covmean.real()  #correct imginnary number from sqrt
+		covmean = covmean.real  #correct imginnary number from sqrt
 
 
 	fid = np.sum((mu1-mu2)**2.0) + np.trace(sigma1+sigma2 - 2.0*covmean)
@@ -78,7 +79,7 @@ def resize_and_preprocessGenerated(image):
 
 def fid(realloader,genloader,batchSize=256):
 
-	count = math.ceil(1000/batchSize)
+	count = math.ceil(10000/batchSize)
 
 	#convert to rgb for inceptionv3
 	realloader=(realloader.map(resize_and_preprocessReal))
