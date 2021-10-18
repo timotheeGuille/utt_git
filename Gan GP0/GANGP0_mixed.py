@@ -121,7 +121,7 @@ print(" def model\n\n")
 print(" def loss")
 
 
-def gradient_penalty00(images, generated_images):
+def gradient_penalty0(images, generated_images):
 
     epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
     x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
@@ -131,11 +131,11 @@ def gradient_penalty00(images, generated_images):
         t.watch(x_interpolate)
         disc_interpolate=discriminator(x_interpolate)
     gradient = t.gradient(disc_interpolate,x_interpolate)
-    norme=tf.sqrt(tf.reduce_sum( gradient ** 2 , axis=[1,2] ) )
-    gp=tf.reduce_mean( ( norme ) ** 2 )
+    norme=gradient.norm(2,dim=1)
+    gp= (norme**2).mean()
     return gp
 
-def gradient_penalty0(images, generated_images):
+def gradient_penalty00(images, generated_images):
 
    
 
