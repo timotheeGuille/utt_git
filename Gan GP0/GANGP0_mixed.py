@@ -121,7 +121,7 @@ print(" def model\n\n")
 print(" def loss")
 
 
-def gradient_penalty0(images, generated_images):
+def gradient_penalty00(images, generated_images):
 
     epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
     x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
@@ -135,6 +135,24 @@ def gradient_penalty0(images, generated_images):
     gp=tf.reduce_mean( ( norme ) ** 2 )
     return gp
 
+def gradient_penalty0(images, generated_images):
+
+   
+
+    #comute gradient of critic
+    with tf.GradientTape() as t_real,tf.GradientTape() as t_generate:
+        t_real.watch(images)
+        disc_real=discriminator(images)
+        t_generate.watch(images)
+        disc_generate=discriminator(generated_images)
+    gradient_real = t_real.gradient(disc_real,images)
+    norme_real=tf.sqrt(tf.reduce_sum( gradient_real ** 2 , axis=[1,2] ) )
+
+    gradient_generate = t_generate.gradient(disc_generate,generated_images)
+    norme_generate=tf.sqrt(tf.reduce_sum( gradient_generate ** 2 , axis=[1,2] ) )
+
+    gp=tf.reduce_mean(  norme_real  )+ tf.reduce_mean(  norme_generate  )
+    return gp
 
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
