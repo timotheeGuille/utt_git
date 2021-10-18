@@ -143,8 +143,9 @@ def gradient_penalty0(images, generated_images):
     with tf.GradientTape() as t_real,tf.GradientTape() as t_generate:
         t_real.watch(images)
         disc_real=discriminator(images)
-        t_generate.watch(images)
+        t_generate.watch(generated_images)
         disc_generate=discriminator(generated_images)
+
     gradient_real = t_real.gradient(disc_real,images)
     norme_real=tf.sqrt(tf.reduce_sum( gradient_real ** 2 , axis=[1,2] ) )
 
