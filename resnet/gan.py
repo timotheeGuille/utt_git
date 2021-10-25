@@ -2,7 +2,7 @@ print("---start---")
 print("GAN")
 
 #typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
-typeExec =1
+typeExec =0
 
 #------------------------------------------------------------------------#
 print(" import")
@@ -30,7 +30,7 @@ print(" param")
 
 
 BATCH_SIZE = 256 if typeExec == 0 else 16
-EPOCHS = 50 if typeExec == 0 else 5
+EPOCHS = 500 if typeExec == 0 else 5
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -90,7 +90,6 @@ def make_generator_model():
     model.add(layers.LeakyReLU())
 
     model.add(layers.Reshape((7, 7, 256)))
-    #assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
     model.add(layers.BatchNormalization())
@@ -108,15 +107,18 @@ def make_generator_model():
 #D model
 def make_discriminator_model():
     model = tf.keras.Sequential()
-    
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
-                                     input_shape=[28, 28, 1]))
+
+    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',input_shape=[28, 28, 1]))
+    model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
 
     model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
 
     model.add(layers.Flatten())
     model.add(layers.Dense(1))
