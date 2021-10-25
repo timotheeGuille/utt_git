@@ -2,7 +2,7 @@ print("---start---")
 print("GAN")
 
 #typeExec = 0(serveur with Gpu) 1(local cpu and low bdd)
-typeExec =1
+typeExec =0
 
 #------------------------------------------------------------------------#
 print(" import")
@@ -20,6 +20,7 @@ from tensorflow.keras import layers
 import time
 
 from IPython import display
+
 
 
 
@@ -83,23 +84,25 @@ import datetime
 from IPython import display
 #G model
 def make_generator_model():
-    model = tf.keras.Sequential()
 
-    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(100,)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+    input =tf.keras.Input(shape=(100,))
+    Dense1=layers.Dense(7*7*256, use_bias=False)(input)
+    BN1=layers.BatchNormalization()(Dense1)
+    Relu1=layers.LeakyReLU()(BN1)
 
-    model.add(layers.Reshape((7, 7, 256)))
+    Reshape=layers.Reshape((7, 7, 256))(Relu1)
 
-    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+    ConvT1=layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False) (Reshape)
+    BN2=layers.BatchNormalization()(ConvT1)
+    Relu2=layers.LeakyReLU()(BN2)
 
-    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+    ConvT2=layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False) (Reshape)
+    BN3=layers.BatchNormalization()(ConvT2)
+    Relu3=layers.LeakyReLU()(BN3)
 
-    model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    Output=layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh') (Relu3)
+
+    model=tf.keras.Model(input,Output)
 
     return model
 
