@@ -98,18 +98,22 @@ def make_generator_model():
 def make_discriminator_model():
 
     input =tf.keras.Input(shape=[28,28,1])
+    x_skip=input
 
-    Conv1=layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same')(input) 
+    Conv1=layers.Conv2D(64, (5, 5), padding='same')(input) 
     BN1=layers.BatchNormalization()(Conv1)
     Relu1=layers.LeakyReLU()(BN1)
 
-    Conv2=layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')(Relu1) 
+    Conv2=layers.Conv2D(128, (5, 5), padding='same')(Relu1) 
     BN2=layers.BatchNormalization()(Conv2)
     Relu2=layers.LeakyReLU()(BN2)
 
-    Conv3=layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')(Relu2) 
+    Conv3=layers.Conv2D(128, (5, 5), padding='same')(Relu2) 
     BN3=layers.BatchNormalization()(Conv3)
-    Relu3=layers.LeakyReLU()(BN3)
+
+    #ConvSkip=layers.Conv2D(128,(1,1),strides=())(x_skip)
+    add=tf.keras.layers.Add()([BN3,x_skip])
+    Relu3=layers.LeakyReLU()(add)
 
     Flat1=layers.Flatten()(Relu3)
     Output=layers.Dense(1)(Flat1)
