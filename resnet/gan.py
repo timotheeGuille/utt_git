@@ -18,6 +18,7 @@ import os
 import PIL
 from tensorflow.keras import layers
 import time
+import datetime
 
 from IPython import display
 
@@ -30,7 +31,7 @@ print(" param")
 
 
 BATCH_SIZE = 256 if typeExec == 0 else 16
-EPOCHS = 500 if typeExec == 0 else 5
+EPOCHS = 500 if typeExec == 0 else 10
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -67,20 +68,6 @@ print(" dataset\n\n")
 #------------------------------------------------------------------------#
 print(" def model")
 
-
-import tensorflow as tf
-
-import glob
-import imageio
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import PIL
-from tensorflow.keras import layers
-import time
-import datetime
-
-from IPython import display
 #G model
 def make_generator_model():
     model = tf.keras.Sequential()
@@ -108,7 +95,7 @@ def make_generator_model():
 def make_discriminator_model():
     model = tf.keras.Sequential()
 
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',input_shape=[28, 28, 1]))
+    model.add(layers.Conv2D(64, (5,5), strides=(2, 2), padding='same',input_shape=[28, 28, 1]))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -116,9 +103,9 @@ def make_discriminator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+    #model.add(layers.Conv2D(128, (5, 5), strides=(1, 1), padding='same'))
+    #model.add(layers.BatchNormalization())
+    #model.add(layers.LeakyReLU())
 
     model.add(layers.Flatten())
     model.add(layers.Dense(1))
@@ -196,7 +183,8 @@ def  train_step(images):
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
     discriminator_loss_M(disc_loss)
-    discriminator_accuracy_M(real_output,tf.ones_like(real_output))
+    discriminator_accuracy_M(tf.ones_like(real_output),real_output)
+    discriminator_accuracy_M(tf.zeros_like(fake_output),fake_output)
     generator_loss_M(gen_loss)
     
     
