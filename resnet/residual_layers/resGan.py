@@ -193,7 +193,8 @@ def  train_step(images):
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
     discriminator_loss_M(disc_loss)
-    discriminator_accuracy_M(real_output,tf.ones_like(real_output))
+    discriminator_accuracy_M(tf.ones_like(real_output),real_output)
+    discriminator_accuracy_M(tf.zeros_like(fake_output),fake_output)
     generator_loss_M(gen_loss)
     
     
