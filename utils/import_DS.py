@@ -19,7 +19,8 @@ def importMnist():
 
 def importMSTAR():
     
-    builder = tfds.ImageFolder("/home/tim/Documents/utt/db/MSTAR/15_DEG_PNG/")
+    #builder = tfds.ImageFolder("/home/tim/Documents/utt/db/MSTAR/15_DEG_PNG/")
+    builder = tfds.ImageFolder(param.mstar_dir)
     print(builder.info)
 
     #ds = builder.as_dataset(split='128',shuffle_files=True)
