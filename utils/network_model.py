@@ -20,21 +20,25 @@ def make_generator_conditional_model(nb_classes=10,z_dim=100):
     joined=layers.multiply([z_input,y_flatten])
     
 
-    Dense1=layers.Dense(32*32*64, use_bias=False)(joined)
+    Dense1=layers.Dense(16*16*64, use_bias=False)(joined)
     BN1=layers.BatchNormalization()(Dense1)
     Relu1=layers.LeakyReLU()(BN1)
 
-    Reshape=layers.Reshape((32, 32, 64))(Relu1)
+    Reshape=layers.Reshape((16, 16, 64))(Relu1)
 
-    ConvT1=layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False) (Reshape)
+    ConvT1=layers.Conv2DTranspose(64, (5, 5), strides=(1, 1), padding='same', use_bias=False) (Reshape)
     BN2=layers.BatchNormalization()(ConvT1)
     Relu2=layers.LeakyReLU()(BN2)
 
-    ConvT2=layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False) (Reshape)
+    ConvT2=layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False) (Relu2)
     BN3=layers.BatchNormalization()(ConvT2)
     Relu3=layers.LeakyReLU()(BN3)
 
-    Output=layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh') (Relu3)
+    ConvT3=layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False) (Relu3)
+    BN4=layers.BatchNormalization()(ConvT3)
+    Relu4=layers.LeakyReLU()(BN4)
+
+    Output=layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh') (Relu4)
     
     return tf.keras.Model([z_input,y_input],Output)
 
