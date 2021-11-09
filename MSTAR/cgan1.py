@@ -87,7 +87,7 @@ def train_step(images):
 
 
 # to visualize progress in the animated GIF)
-seed = (tf.random.normal([9, param.noise_dim]),np.array([0,1,2,3,4,5,6,7,8,9]))      
+seed = (tf.random.normal([9, param.noise_dim]),np.array([0,1,2,3,4,5,6,7,8]))      
 
 def train(dataset, epochs):
     gen_loss,disc_loss =0,0
@@ -95,7 +95,8 @@ def train(dataset, epochs):
         start = time.time()
         
         for image_batch in dataset:
-            (gen_loss,disc_loss) = train_step(image_batch)
+            if image_batch[1].numpy().size == param.BATCH_SIZE :
+                (gen_loss,disc_loss) = train_step(image_batch)
 
         #summary img
         predictions = generator(seed, training=False)
