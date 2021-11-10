@@ -100,7 +100,7 @@ def make_discriminator_model():
     input =tf.keras.Input(shape=[28,28,1])
     x_skip=input
 
-    Conv1=layers.Conv2D(64, (5, 5), padding='same')(input) 
+    Conv1=layers.Conv2D(64, (5, 5),  padding='same')(input) 
     BN1=layers.BatchNormalization()(Conv1)
     Relu1=layers.LeakyReLU()(BN1)
 
@@ -115,7 +115,40 @@ def make_discriminator_model():
     add=tf.keras.layers.Add()([BN3,x_skip])
     Relu3=layers.LeakyReLU()(add)
 
-    Flat1=layers.Flatten()(Relu3)
+    x_skip2=Relu3
+    Conv4=layers.Conv2D(64, (5, 5), padding='same')(Relu3) 
+    BN4=layers.BatchNormalization()(Conv4)
+    Relu4=layers.LeakyReLU()(BN4)
+
+    Conv5=layers.Conv2D(128, (5, 5), padding='same')(Relu4) 
+    BN5=layers.BatchNormalization()(Conv5)
+    Relu5=layers.LeakyReLU()(BN5)
+
+    Conv6=layers.Conv2D(128, (5, 5), padding='same')(Relu5) 
+    BN6=layers.BatchNormalization()(Conv6)
+
+    #ConvSkip=layers.Conv2D(128,(1,1),strides=())(x_skip)
+    add2=tf.keras.layers.Add()([BN6,x_skip2])
+    Relu6=layers.LeakyReLU()(add2)
+
+    x_skip3=Relu6
+    Conv7=layers.Conv2D(64, (5, 5), padding='same')(Relu6) 
+    BN7=layers.BatchNormalization()(Conv7)
+    Relu7=layers.LeakyReLU()(BN7)
+
+    Conv8=layers.Conv2D(128, (5, 5), padding='same')(Relu7) 
+    BN8=layers.BatchNormalization()(Conv8)
+    Relu8=layers.LeakyReLU()(BN8)
+
+    Conv9=layers.Conv2D(128, (5, 5), padding='same')(Relu8) 
+    BN9=layers.BatchNormalization()(Conv9)
+
+    #ConvSkip=layers.Conv2D(128,(1,1),strides=())(x_skip)
+    add3=tf.keras.layers.Add()([BN9,x_skip3])
+    Relu9=layers.LeakyReLU()(add3)
+
+
+    Flat1=layers.Flatten()(Relu9)
     Output=layers.Dense(1)(Flat1)
 
     model=tf.keras.Model(input,Output)
