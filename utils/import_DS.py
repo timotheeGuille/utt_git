@@ -18,15 +18,17 @@ def importMnist():
     return train_dataset
 
 def importMSTAR():
-    
-    #builder = tfds.ImageFolder("/home/tim/Documents/utt/db/MSTAR/15_DEG_PNG/")
-    builder = tfds.ImageFolder(param.mstar_dir)
-    print(builder.info)
+       
+    dataset = tf.keras.preprocessing.image_dataset_from_directory(
+    param.mstar_dir,
+    labels="inferred",
+    label_mode="int",  # categorical, binary
+    # class_names=['0', '1', '2', '3', ...]
+    color_mode="grayscale",
+    batch_size=param.BATCH_SIZE,
+    image_size=(128, 128),
+    shuffle=True,
+    seed=123,
+    )
 
-    #ds = builder.as_dataset(split='128',shuffle_files=True)
-    #tfds.show_examples(ds,builder.info)
-    ds = builder.as_dataset(split='128',batch_size=param.BATCH_SIZE,shuffle_files=True, as_supervised=True)
-    
-
-
-    return ds
+    return dataset 

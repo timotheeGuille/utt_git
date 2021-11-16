@@ -19,7 +19,8 @@ import param
 
 
 dataset , nb_classes=import_DS.importMSTAR() ,9
-img_shape=(128,128,3)
+
+img_shape=(128,128,1)
 
 
 generator = network_model.make_generator_model()

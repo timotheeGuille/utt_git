@@ -38,13 +38,13 @@ def make_generator_conditional_model(nb_classes=10,z_dim=100):
     BN4=layers.BatchNormalization()(ConvT3)
     Relu4=layers.LeakyReLU()(BN4)
 
-    Output=layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh') (Relu4)
+    Output=layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh') (Relu4)
     
     return tf.keras.Model([z_input,y_input],Output)
 
 
 #D model
-def make_discriminator_conditional_model(nb_classes=10,img_shape=(128,128,3)):
+def make_discriminator_conditional_model(nb_classes=10,img_shape=(128,128,1)):
 
     img_input=layers.Input(shape=img_shape)
 
@@ -56,7 +56,7 @@ def make_discriminator_conditional_model(nb_classes=10,img_shape=(128,128,3)):
     concatenated=layers.Concatenate(axis=-1)([img_input,y_reshape])
 
 
-    Conv1=layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',input_shape=(128,128,4))(concatenated) 
+    Conv1=layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',input_shape=(128,128,2))(concatenated) 
     BN1=layers.BatchNormalization()(Conv1)
     Relu1=layers.LeakyReLU()(BN1)
 
@@ -90,14 +90,14 @@ def make_generator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
 
     return model
 
 def make_discriminator_model():
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
-                                     input_shape=[128, 128, 3]))
+                                     input_shape=[128, 128, 1]))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
