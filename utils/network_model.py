@@ -76,12 +76,20 @@ def make_discriminator_conditional_model(nb_classes=10,img_shape=(128,128,1)):
 
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(16*16*64, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(8*8*64, use_bias=False, input_shape=(100,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((16, 16, 64)))
+    model.add(layers.Reshape((8, 8, 64)))
 
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
