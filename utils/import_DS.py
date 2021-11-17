@@ -32,3 +32,19 @@ def importMSTAR():
     )
 
     return dataset 
+
+def importMNIST128():
+       
+    dataset = tf.keras.preprocessing.image_dataset_from_directory(
+    param.mnist_128_dir,
+    labels="inferred",
+    label_mode="int",  # categorical, binary
+    # class_names=['0', '1', '2', '3', ...]
+    color_mode="grayscale",
+    batch_size=param.BATCH_SIZE,
+    image_size=(128, 128),
+    shuffle=True,
+    seed=123,
+    )
+
+    return dataset 
