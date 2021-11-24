@@ -57,8 +57,15 @@ img_summary_writer = tf.summary.create_file_writer(img_log_dir)
 print(" def metrics\n\n")
 #------------------------------------------------------------------------#
 
+
+
 #@tf.function
 def train_step(images):
+
+    img_norm= ( images[0] - 127.5 ) / 127.5 
+    db_norm=(img_norm , images[1])
+    images=db_norm
+
     noise = tf.random.normal([param.BATCH_SIZE, param.noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:

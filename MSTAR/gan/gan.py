@@ -61,6 +61,13 @@ print(" def metrics\n\n")
 def train_step(images):
     noise = tf.random.normal([param.BATCH_SIZE, param.noise_dim])
 
+    #norm 
+    #ici car probleme d'allocution tuples
+    #todo -> mettre dans une fonction dans l'import
+    img_norm= ( images[0] - 127.5 ) / 127.5 
+    db_norm=(img_norm , images[1])
+    images=db_norm
+
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
 
       #images[1].numpy() = label of the images
