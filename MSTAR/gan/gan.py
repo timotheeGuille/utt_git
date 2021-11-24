@@ -44,6 +44,8 @@ discriminator_accuracy_M = tf.keras.metrics.BinaryCrossentropy(name='d_accuracy'
 generator_loss_M = tf.keras.metrics.Mean('g_loss', dtype=tf.float32)
 generator_accuracy_M = tf.keras.metrics.BinaryCrossentropy('g_accuracy')
 
+accuracy_Homemade= tf.keras.metrics.Mean('loss_home', dtype=tf.float32)
+
 
 current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 gen_log_dir = './logs/gradient_tape/' + current_time + '/gen'
@@ -88,6 +90,8 @@ def train_step(images):
     discriminator_accuracy_M(tf.zeros_like(fake_output),fake_output)
     generator_loss_M(gen_loss)
 
+    accuracy_Homemade(loss.accuracy(real_output,fake_output))
+
     return (gen_loss,disc_loss)
 
 
@@ -116,14 +120,17 @@ def train(dataset, epochs):
         with disc_summary_writer.as_default():
             tf.summary.scalar('loss', discriminator_loss_M.result(), step=epoch)
             tf.summary.scalar('accuracy', discriminator_accuracy_M.result(), step=epoch)
+            tf.summary.scalar('accuracy_h', accuracy_Homemade.result(), step=epoch)
 
-        print ('Epoch {} LossG = {} == {}  LossD={} == {} Time for epoch {} sec'
-              .format(epoch + 1,gen_loss,generator_loss_M.result(),disc_loss,discriminator_loss_M.result(), time.time()-start))
+        print ('Epoch {} LossG = {} == {}  LossD={} == {} acc={} == {} Time for epoch {} sec'
+              .format(epoch + 1,gen_loss,generator_loss_M.result(),disc_loss,discriminator_loss_M.result(),
+              discriminator_accuracy_M.result(),accuracy_Homemade.result(), time.time()-start))
 
         # Reset metrics every epoch
         discriminator_loss_M.reset_states()
         generator_loss_M.reset_states()
         discriminator_accuracy_M.reset_states()
+        accuracy_Homemade.reset_states()
 
 
     
