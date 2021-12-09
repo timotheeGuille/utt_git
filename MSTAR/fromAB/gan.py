@@ -34,7 +34,7 @@ Epoch=50
 dirMstar=param.mstar_dir
 
 def our_generator():
-    dir=dirMnist_128
+    dir=dirMstar
     for subdir in os.listdir(dir):
       for filename in os.listdir(os.path.join(dir,subdir)):
         png_file=os.path.join(dir,subdir, filename)
