@@ -20,7 +20,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
 from utils import loss 
 from utils import  network_model
-import ab_tf2
+import ab_tf2_2
 import param
 
 batchSize=28
@@ -51,8 +51,8 @@ dataset = tf.data.Dataset.from_generator(our_generator, (tf.float64)).shuffle(10
 
 #       reseau 
 #------------------------------------------------------------------------#
-generator = ab_tf2.netG()
-discriminator = ab_tf2.netD()
+generator = ab_tf2_2.netG(batchSize)
+discriminator = ab_tf2_2.netD(batchSize)
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
