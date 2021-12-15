@@ -74,7 +74,7 @@ def make_discriminator_conditional_model(nb_classes=10,img_shape=(128,128,1)):
     return tf.keras.Model([img_input, y_input],Output)
 
 
-def make_generator_model():
+def make_generator_model_128():
     model = tf.keras.Sequential()
     model.add(layers.Dense(8*8*64, use_bias=False, input_shape=(100,)))
     model.add(layers.BatchNormalization())
@@ -102,7 +102,7 @@ def make_generator_model():
 
     return model
 
-def make_discriminator_model():
+def make_discriminator_model_128():
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
                                      input_shape=[128, 128, 1]))
