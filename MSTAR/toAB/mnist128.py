@@ -18,9 +18,9 @@ sys.path.append((os.getcwd()))
 sys.path.append(os.path.dirname(os.getcwd()))
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
 
-import loss 
-import  network_model
-
+from utils import loss 
+from utils import  network_model
+import param
 
 batchSize=28
 Epoch=50
@@ -29,7 +29,8 @@ Epoch=50
 #import des données dans un dataset + normalisation
 
 
-dirMnist_128=os.path.dirname(os.getcwd()) + "mnist_png_resize(128_128)\\dataset\\"
+#dirMnist_128=os.path.dirname(os.getcwd()) + "mnist_png_resize(128_128)\\dataset\\"
+dirMnist_128= param.mnist_128_dir
 
 def our_generator():
     dir=dirMnist_128
