@@ -32,6 +32,7 @@ Epoch=50
 
 #dirMnist_128= "E:\\utt\\db\\MSTAR\\15_DEG_PNG\\128\\"
 dirMstar=param.mstar_dir
+dirMstar=param.mnist_128_dir
 
 def our_generator():
     dir=dirMstar
@@ -43,7 +44,7 @@ def our_generator():
         im = im.reshape(im.shape[0], im.shape[1], 1)
         yield im
 
-dataset = tf.data.Dataset.from_generator(our_generator, (tf.float64)).shuffle(10000).batch(batchSize)
+dataset = tf.data.Dataset.from_generator(our_generator, (tf.float32)).shuffle(10000).batch(batchSize)
 
 #------------------------------------------------------------------------#
 
