@@ -22,3 +22,30 @@ def accuracy (real_output,fake_output):
 
     acc= (true_P + true_N) / (true_P + true_N + false_P + false_N)
     return acc
+
+
+def gradient_penalty(images, generated_images,discriminator):
+    
+    epsilon = tf.random.uniform([images.shape[0], 1, 1, 1],0.0,1.0)
+    x_interpolate= epsilon*images + (1-epsilon) * (generated_images)
+
+    #comute gradient of critic
+    with tf.GradientTape() as t:
+        t.watch(x_interpolate)
+        disc_interpolate=discriminator(x_interpolate)
+    gradient = t.gradient(disc_interpolate,x_interpolate)
+    norme=tf.sqrt(tf.reduce_sum( gradient ** 2 , axis=[1,2] ) )
+    gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
+    return gp
+
+
+def wasserstein_discriminator_loss(real_output, fake_output,images,generated_images,discriminator,coeff=10.0):
+
+    gp=gradient_penalty(images, generated_images,discriminator)
+
+    loss= (tf.reduce_mean(real_output)-tf.reduce_mean(fake_output) + coeff * gp)
+    return loss
+
+def wasserstein_generator_loss(fake_output):
+    loss=  tf.reduce_mean(fake_output)
+    return loss
