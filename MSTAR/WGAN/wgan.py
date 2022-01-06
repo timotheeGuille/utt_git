@@ -23,7 +23,7 @@ from utils import  network_model
 #import ab_tf2
 import param
 
-batchSize=28
+batchSize=12
 Epoch=50
 #       import des data
 #------------------------------------------------------------------------#
@@ -32,7 +32,7 @@ Epoch=50
 
 #dirMnist_128= "E:\\utt\\db\\MSTAR\\15_DEG_PNG\\128\\"
 dirMstar=param.mstar_dir
-dirMstar=param.mnist_128_dir
+dirMnist=param.mnist_128_dir
 
 def our_generator():
     dir=dirMstar
