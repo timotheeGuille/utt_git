@@ -92,7 +92,7 @@ img_summary_writer = tf.summary.create_file_writer(img_log_dir)
 #       fonction train 
 #------------------------------------------------------------------------#
 
-def train_step(images,train_G):
+def train_step(images):
     
     #train D 5 times
     for _ in range(5):
@@ -134,16 +134,14 @@ def train_step(images,train_G):
 seed = (tf.random.normal([9, 100])) 
 
 def train(dataset, epochs):
-    train_G=False
-    n=1
+ 
     for epoch in range(epochs):
         start = time.time()
         
         for image_batch in dataset:
             if image_batch.shape[0] == batchSize :
-                train_step(image_batch,train_G)
-            n=n+1
-            train_G=(n%5==0)
+                train_step(image_batch)
+
 
         #summary img
         predictions = generator(seed, training=False)
