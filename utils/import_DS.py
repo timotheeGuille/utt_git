@@ -48,3 +48,19 @@ def importMNIST128():
     )
 
     return dataset 
+
+def importMNIST28_local():
+       
+    dataset = tf.keras.preprocessing.image_dataset_from_directory(
+    param.mnist_28_dir,
+    labels="inferred",
+    label_mode="int",  # categorical, binary
+    # class_names=['0', '1', '2', '3', ...]
+    color_mode="grayscale",
+    batch_size=param.BATCH_SIZE,
+    image_size=(28, 28),
+    shuffle=True,
+    seed=123,
+    )
+
+    return dataset 

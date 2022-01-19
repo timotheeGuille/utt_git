@@ -38,6 +38,15 @@ def gradient_penalty(images, generated_images,discriminator):
     gp=tf.reduce_mean( ( norme - 1.0 ) ** 2 )
     return gp
 
+def gradient_penalty0(images,discriminator):
+    
+    with tf.GradientTape() as t:
+        t.watch(images)
+        disc=discriminator(images)
+    gradient = t.gradient(disc,images)
+    norme=tf.sqrt(tf.reduce_sum( gradient ** 2 , axis=[1,2] ) )
+    gp=tf.reduce_mean( ( norme ) ** 2 )
+    return gp
 
 def wasserstein_discriminator_loss(real_output, fake_output,images,generated_images,discriminator,coeff=10.0):
 
@@ -47,5 +56,5 @@ def wasserstein_discriminator_loss(real_output, fake_output,images,generated_ima
     return loss
 
 def wasserstein_generator_loss(fake_output):
-    loss=  tf.reduce_mean(fake_output)
+    loss =  -tf.reduce_mean(fake_output)
     return loss
