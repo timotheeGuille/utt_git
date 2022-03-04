@@ -55,8 +55,8 @@ numpy.random.shuffle(test_img)
 print('Loaded', train_img.shape, test_img.shape)
 
 # convert integer to floating point values
-images1 = train_img.astype('float32')
-images2 = test_img.astype('float32')
+train_img = train_img.astype('float32')
+test_img = test_img.astype('float32')
 
 # resize images
 train_img = scale_images(train_img, (299,299,3))
@@ -67,11 +67,11 @@ print('Scaled', train_img.shape, test_img.shape)
 
 
 # pre-process images
-images1 = preprocess_input(train_img)
-images2 = preprocess_input(test_img)
+train_img = preprocess_input(train_img)
+test_img = preprocess_input(test_img)
 
 
-fid = calculate_fid(model, images1, images2)
+fid = calculate_fid(model, train_img, test_img)
 print('FID: %.3f' % fid)
 
 #train_img = train_img.astype('float32')
