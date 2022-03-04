@@ -45,8 +45,8 @@ def calculate_fid(model, images1, images2):
 
 model = InceptionV3(include_top=False, pooling='avg', input_shape=(299,299,3))
 
-#train_img ,train_attribute ,test_img,test_attribute = get_mstar_perso()
-(train_img, _), (test_img, _) = cifar10.load_data()
+train_img ,train_attribute ,test_img,test_attribute = get_mstar_perso()
+#(train_img, _), (test_img, _) = cifar10.load_data()
 
 
 numpy.random.shuffle(train_img)
